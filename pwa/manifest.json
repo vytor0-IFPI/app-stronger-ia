@@ -1,0 +1,26 @@
+{
+  "name": "Stronger Cast - Fé & Juventude",
+  "short_name": "StrongerCast",
+  "description": "Podcast de fé para jovens cristãos. Episódios, devocionais diários e Bíblia offline completa.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#141414",
+  "theme_color": "#c8912a",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["lifestyle", "faith", "podcast", "education"],
+  "lang": "pt-BR"
+}

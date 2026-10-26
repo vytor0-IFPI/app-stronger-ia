@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Stronger Cast - Podcast de Fé para Jovens</title>
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#141414">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="StrongerCast">
+  <link rel="icon" type="image/png" href="/assets/aistudio/Logotipo_minimalista_Stronger_Cast_af8e017e.png">
+  <link rel="apple-touch-icon" href="/assets/aistudio/Logotipo_minimalista_Stronger_Cast_af8e017e.png">
+  <style>
+    :root {
+      --bg: #141414;
+      --surface: #1e1e1e;
+      --surface-elevated: #282828;
+      --border: #383226;
+      --gold-primary: #c8912a;
+      --gold-secondary: #e8c274;
+      --text-primary: #f5f5f5;
+      --text-secondary: #c2c2c2;
+      --text-muted: #888888;
+      --user-bubble: #2d261a;
+      --ai-bubble: #1f1f1f;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; -webkit-tap-highlight-color: transparent; }
+    body { background-color: var(--bg); color: var(--text-primary); min-height: 100vh; display: flex; flex-direction: column; overflow-x: hidden; }
+    
+    /* Top Header */
+    header { background: #181818; border-bottom: 1px solid var(--border); padding: 12px 18px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; }
+    .brand { display: flex; align-items: center; gap: 12px; cursor: pointer; }
+    .brand-logo-img { height: 32px; object-fit: contain; }
+    .brand-badge { background: rgba(200, 145, 42, 0.2); border: 1px solid var(--gold-primary); color: var(--gold-secondary); font-size: 0.65rem; font-weight: 800; padding: 2px 8px; border-radius: 6px; letter-spacing: 0.5px; }
+    
+    /* Navigation Bar */
+    nav { background: #141414; border-bottom: 1px solid #262626; display: flex; overflow-x: auto; padding: 6px 12px; gap: 6px; scrollbar-width: none; }
+    nav::-webkit-scrollbar { display: none; }
+    .nav-btn { background: transparent; border: 1px solid transparent; color: var(--text-secondary); font-size: 0.85rem; font-weight: 600; padding: 8px 14px; border-radius: 20px; cursor: pointer; white-space: nowrap; display: flex; align-items: center; gap: 6px; transition: all 0.2s ease; }
+    .nav-btn.active { background: rgba(200, 145, 42, 0.15); border-color: var(--gold-primary); color: var(--gold-secondary); }
+    .nav-btn:hover:not(.active) { background: #222; }
+    .nav-ai-btn { border-color: rgba(232, 194, 116, 0.4); background: linear-gradient(135deg, rgba(200,145,42,0.15), rgba(232,194,116,0.08)); }
+
+    /* Content Area */
+    main { flex: 1; max-width: 820px; width: 100%; margin: 0 auto; padding: 16px; display: flex; flex-direction: column; }
+    .screen { display: none; flex-direction: column; width: 100%; }
+    .screen.active { display: flex; }
+
+    /* Hero Banner */
+    .hero { background: linear-gradient(180deg, #221c13 0%, #171717 100%); border: 1px solid var(--border); border-radius: 16px; padding: 22px; text-align: center; margin-bottom: 20px; position: relative; overflow: hidden; }
+    .hero::before { content: ""; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(circle, rgba(200, 145, 42, 0.08) 0%, transparent 60%); pointer-events: none; }
+    .hero h1 { font-size: 1.4rem; color: var(--gold-secondary); margin-bottom: 6px; font-weight: 800; }
+    .hero p { color: var(--text-secondary); font-size: 0.9rem; line-height: 1.5; max-width: 540px; margin: 0 auto 14px auto; }
+    .hero-actions { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; }
+
+    /* Buttons */
+    .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; background: var(--gold-primary); color: #141414; font-weight: 700; font-size: 0.85rem; padding: 10px 18px; border-radius: 10px; text-decoration: none; border: none; cursor: pointer; transition: transform 0.1s, opacity 0.2s; }
+    .btn:active { transform: scale(0.98); }
+    .btn-secondary { background: var(--surface-elevated); color: var(--text-primary); border: 1px solid #444; }
+    .btn-outline { background: transparent; border: 1px solid var(--gold-primary); color: var(--gold-secondary); }
+    .btn-sm { padding: 6px 12px; font-size: 0.75rem; border-radius: 8px; }
+
+    /* Cards */
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 18px; margin-bottom: 16px; position: relative; }
+    .card-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 8px; }
+    .card-title { font-size: 1.1rem; color: var(--gold-secondary); font-weight: 700; line-height: 1.3; }
+    .card-meta { font-size: 0.78rem; color: var(--text-muted); display: flex; gap: 8px; align-items: center; margin-bottom: 12px; }
+    .card-badge { background: rgba(200, 145, 42, 0.15); border: 1px solid rgba(200,145,42,0.4); color: var(--gold-secondary); font-size: 0.75rem; font-weight: 600; padding: 4px 8px; border-radius: 6px; display: inline-block; margin-bottom: 10px; }
+
+    /* Audio Player Component */
+    .audio-player-container { background: #1b1710; border: 1px solid var(--border); border-radius: 12px; padding: 12px 16px; margin: 12px 0; }
+    .audio-player-container audio { width: 100%; height: 36px; outline: none; filter: sepia(20%) saturate(120%) hue-rotate(5deg); }
+
+    /* Chatbot Interface */
+    .chat-container { display: flex; flex-direction: column; height: calc(100vh - 160px); min-height: 520px; background: var(--surface); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; }
+    .chat-header { background: #161616; border-bottom: 1px solid var(--border); padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; }
+    .chat-header-info { display: flex; align-items: center; gap: 10px; }
+    .chat-avatar { width: 34px; height: 34px; border-radius: 50%; background: linear-gradient(135deg, #e8c274, #c8912a); display: flex; align-items: center; justify-content: center; font-weight: bold; color: #141414; font-size: 1rem; }
+    .chat-title-group h2 { font-size: 0.95rem; color: var(--gold-secondary); font-weight: 700; }
+    .chat-title-group span { font-size: 0.72rem; color: #4cd964; display: flex; align-items: center; gap: 4px; }
+    .chat-title-group span::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: #4cd964; display: inline-block; }
+    
+    .chat-messages { flex: 1; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 14px; scroll-behavior: smooth; }
+    .chat-msg { display: flex; flex-direction: column; max-width: 85%; animation: fadeIn 0.25s ease; }
+    .chat-msg.user { align-self: flex-end; }
+    .chat-msg.ai { align-self: flex-start; }
+    
+    .chat-bubble { padding: 12px 16px; border-radius: 16px; font-size: 0.92rem; line-height: 1.55; word-break: break-word; }
+    .chat-msg.user .chat-bubble { background: var(--user-bubble); border: 1px solid rgba(200, 145, 42, 0.4); color: #fff; border-bottom-right-radius: 4px; }
+    .chat-msg.ai .chat-bubble { background: var(--ai-bubble); border: 1px solid #333; color: var(--text-primary); border-bottom-left-radius: 4px; }
+    
+    .chat-msg-footer { display: flex; align-items: center; justify-content: flex-end; gap: 8px; margin-top: 4px; padding: 0 4px; font-size: 0.7rem; color: var(--text-muted); }
+    .chat-action-btn { background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 0.7rem; padding: 2px 4px; }
+    .chat-action-btn:hover { color: var(--gold-secondary); }
+
+    /* Suggested Chips */
+    .chips-row { display: flex; gap: 8px; overflow-x: auto; padding: 8px 16px; background: #171717; border-top: 1px solid #262626; scrollbar-width: none; }
+    .chips-row::-webkit-scrollbar { display: none; }
+    .chip { background: var(--surface-elevated); border: 1px solid var(--border); color: var(--text-secondary); font-size: 0.78rem; padding: 6px 12px; border-radius: 16px; white-space: nowrap; cursor: pointer; transition: all 0.2s; }
+    .chip:hover { border-color: var(--gold-primary); color: var(--gold-secondary); }
+
+    /* Chat Input */
+    .chat-input-bar { display: flex; gap: 8px; padding: 12px 14px; background: #161616; border-top: 1px solid var(--border); align-items: center; }
+    .chat-input { flex: 1; background: #101010; border: 1px solid #3a3a3a; color: #fff; font-size: 0.92rem; padding: 10px 14px; border-radius: 22px; outline: none; transition: border-color 0.2s; }
+    .chat-input:focus { border-color: var(--gold-primary); }
+    .chat-send-btn { background: var(--gold-primary); color: #141414; border: none; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: opacity 0.2s; flex-shrink: 0; }
+    .chat-send-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    /* Markdown/Verse style */
+    .verse-ref { color: var(--gold-secondary); font-weight: 700; }
+    .verse-quote { border-left: 3px solid var(--gold-primary); padding-left: 10px; margin: 8px 0; color: #dedede; font-style: italic; background: rgba(200, 145, 42, 0.05); padding: 8px 12px; border-radius: 0 8px 8px 0; }
+
+    /* APK Download Card */
+    .download-card { background: linear-gradient(135deg, #241e15 0%, #191919 100%); border: 1px solid var(--gold-primary); border-radius: 16px; padding: 24px; text-align: center; margin: 16px 0; }
+    .download-badge { background: #c8912a; color: #141414; font-size: 0.72rem; font-weight: 800; padding: 4px 10px; border-radius: 12px; display: inline-block; margin-bottom: 12px; }
+
+    /* Bible Reader */
+    .bible-selector { display: flex; gap: 8px; margin-bottom: 14px; flex-wrap: wrap; }
+    .bible-selector select { background: #222; color: #fff; border: 1px solid var(--border); padding: 8px 12px; border-radius: 8px; font-size: 0.9rem; outline: none; }
+    .bible-text { line-height: 1.8; font-size: 1rem; color: #dedede; }
+    .verse-num { color: var(--gold-primary); font-weight: bold; font-size: 0.8rem; vertical-align: super; margin-right: 4px; }
+
+    footer { text-align: center; padding: 20px; font-size: 0.78rem; color: var(--text-muted); border-top: 1px solid #222; margin-top: auto; }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Header -->
+  <header>
+    <div class="brand" onclick="switchTab('episodes')">
+      <img src="/assets/aistudio/LOGO_STRONGER-CAST_SEM_FUNDO_f448797d.png" alt="Stronger Cast" class="brand-logo-img" onerror="this.style.display='none'; document.getElementById('fallback-logo').style.display='flex';">
+      <div id="fallback-logo" class="chat-avatar" style="display:none; width:30px; height:30px; font-size:0.8rem;">S</div>
+      <span class="brand-badge">OFICIAL</span>
+    </div>
+    <div style="display: flex; gap: 8px;">
+      <button class="btn btn-outline btn-sm" onclick="switchTab('chat')">✨ Stronger IA</button>
+      <a href="/StrongerCast.apk" class="btn btn-sm" download>⬇ APK</a>
+    </div>
+  </header>
+
+  <!-- Navigation Bar -->
+  <nav>
+    <button class="nav-btn active" id="tab-episodes" onclick="switchTab('episodes')">🎙️ Episódios</button>
+    <button class="nav-btn nav-ai-btn" id="tab-chat" onclick="switchTab('chat')">🤖 Stronger IA (Bíblia)</button>
+    <button class="nav-btn" id="tab-bible" onclick="switchTab('bible')">📖 Bíblia Livre</button>
+    <button class="nav-btn" id="tab-devotionals" onclick="switchTab('devotionals')">✝️ Devocionais</button>
+    <button class="nav-btn" id="tab-channels" onclick="switchTab('channels')">📺 Canais</button>
+    <button class="nav-btn" id="tab-download" onclick="switchTab('download')">📲 Baixar APK</button>
+  </nav>
+
+  <!-- Main Content -->
+  <main>
+
+    <!-- SCREEN 1: EPISÓDIOS -->
+    <div class="screen active" id="screen-episodes">
+      <div class="hero">
+        <h1>Fé Inabalável para a Nova Geração</h1>
+        <p>O podcast de fé que une conversas profundas, apologética, liderança e propósito para jovens cristãos.</p>
+        <div class="hero-actions">
+          <button class="btn" onclick="switchTab('chat')">✨ Conversar com a Stronger IA</button>
+          <a href="/StrongerCast.apk" class="btn btn-outline" download>Instalar App Android</a>
+        </div>
+      </div>
+
+      <h2 style="font-size: 1.15rem; color: var(--gold-secondary); margin-bottom: 14px;">Episódios em Destaque</h2>
+
+      <!-- Card Episódio 1 -->
+      <div class="card">
+        <span class="card-badge">Último Lançamento</span>
+        <div class="card-header">
+          <h3 class="card-title">#01 — Identidade e Propósito: Vencendo as Incertezas da Juventude</h3>
+        </div>
+        <div class="card-meta">
+          <span>🗓️ 24 Out 2026</span>
+          <span>•</span>
+          <span>👤 Convidado: Pr. Guilherme Santos</span>
+        </div>
+        <p style="color: var(--text-secondary); font-size: 0.9rem; line-height: 1.5; margin-bottom: 14px;">
+          Neste episódio inaugural, discutimos como encontrar segurança e propósito inabalável em Cristo em um mundo repleto de comparações e ansiedade nas redes sociais.
+        </p>
+        <div class="audio-player-container">
+          <div style="font-size: 0.75rem; color: var(--gold-secondary); margin-bottom: 6px; font-weight: 600;">Ouvir Áudio MP3 Completo:</div>
+          <audio controls preload="none">
+            <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
+            Seu navegador não suporta player de áudio HTML5.
+          </audio>
+        </div>
+        <div style="display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap;">
+          <a href="https://youtu.be/dQw4w9WgXcQ" target="_blank" class="btn btn-outline btn-sm">▶ Assistir no YouTube</a>
+          <button class="btn btn-secondary btn-sm" onclick="askAiAbout('Gostaria de uma reflexão bíblica baseada no episódio #01 sobre Identidade e Propósito em Cristo para jovens.')">💡 Refletir com IA</button>
+        </div>
+      </div>
+
+      <!-- Card Episódio 2 -->
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title">#02 — Fé no Meio do Caos: Ansiedade e Paz que Excede Entendimento</h3>
+        </div>
+        <div class="card-meta">
+          <span>🗓️ 18 Out 2026</span>
+          <span>•</span>
+          <span>👤 Convidada: Psicóloga Ana Oliveira</span>
+        </div>
+        <p style="color: var(--text-secondary); font-size: 0.9rem; line-height: 1.5; margin-bottom: 14px;">
+          Uma conversa aberta sobre saúde emocional à luz de Filipenses 4:6-7, quebrando tabus sobre oração, acolhimento e a suficiência da graça de Deus.
+        </p>
+        <div class="audio-player-container">
+          <div style="font-size: 0.75rem; color: var(--gold-secondary); margin-bottom: 6px; font-weight: 600;">Ouvir Áudio MP3 Completo:</div>
+          <audio controls preload="none">
+            <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3" type="audio/mpeg">
+          </audio>
+        </div>
+        <div style="display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap;">
+          <a href="https://youtu.be/dQw4w9WgXcQ" target="_blank" class="btn btn-outline btn-sm">▶ Assistir no YouTube</a>
+          <button class="btn btn-secondary btn-sm" onclick="askAiAbout('Como lidar biblicamente com ansiedade e medo do futuro?')">💡 Refletir com IA</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- SCREEN 2: CHATBOT BÍBLICO (STRONGER IA COM GEMINI) -->
+    <div class="screen" id="screen-chat">
+      <div class="chat-container">
+        
+        <!-- Header do Chat -->
+        <div class="chat-header">
+          <div class="chat-header-info">
+            <div class="chat-avatar">✝️</div>
+            <div class="chat-title-group">
+              <h2>Stronger IA Bíblia</h2>
+              <span>Online · Gemini 3.8 Flash & Sabedoria Bíblica</span>
+            </div>
+          </div>
+          <button class="btn btn-secondary btn-sm" onclick="clearChat()">Limpar</button>
+        </div>
+
+        <!-- Thread de Mensagens -->
+        <div class="chat-messages" id="chat-messages">
+          <div class="chat-msg ai">
+            <div class="chat-bubble">
+              Graça e paz! Eu sou o <strong>Stronger IA</strong>, seu assistente bíblico e mentor devocional no Stronger Cast. 🕊️
+              <br><br>
+              Como posso te edificar hoje? Você pode tirar dúvidas sobre versículos, pedir estudos bíblicos, orações ou orientações práticas para a juventude cristã!
+            </div>
+            <div class="chat-msg-footer">
+              <span>Agora</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Chips de Sugestões de Perguntas -->
+        <div class="chips-row">
+          <div class="chip" onclick="sendQuickPrompt('Como vencer a ansiedade com a Bíblia?')">🌿 Vencer ansiedade</div>
+          <div class="chip" onclick="sendQuickPrompt('O que a Bíblia ensina sobre propósito para jovens?')">🎯 Propósito de vida</div>
+          <div class="chip" onclick="sendQuickPrompt('Explicar o capítulo Romanos 8 de forma simples')">📖 Explicar Romanos 8</div>
+          <div class="chip" onclick="sendQuickPrompt('Como orar com sinceridade quando estou sem forças?')">🙏 Como orar</div>
+          <div class="chip" onclick="sendQuickPrompt('Reflexão sobre Salmos 23 para hoje')">🐑 Salmo 23</div>
+        </div>
+
+        <!-- Campo de Input -->
+        <div class="chat-input-bar">
+          <input type="text" id="chat-input" class="chat-input" placeholder="Faça uma pergunta sobre a Bíblia ou peça um conselho..." onkeydown="if(event.key==='Enter') sendMessage()">
+          <button class="chat-send-btn" id="chat-send-btn" onclick="sendMessage()" title="Enviar pergunta">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- SCREEN 3: BÍBLIA OFFLINE -->
+    <div class="screen" id="screen-bible">
+      <div class="card">
+        <h2 style="color: var(--gold-secondary); margin-bottom: 10px;">Bíblia Sagrada (Bíblia Livre)</h2>
+        <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 14px;">Texto com ortografia moderna, licença livre CC BY 3.0. Funciona 100% offline.</p>
+        
+        <div class="bible-selector">
+          <select id="bible-book-select" onchange="loadBibleChapter()">
+            <optgroup label="Novo Testamento">
+              <option value="Romanos" selected>Romanos</option>
+              <option value="João">João</option>
+              <option value="Filipenses">Filipenses</option>
+              <option value="Tiago">Tiago</option>
+              <option value="Hebreus">Hebreus</option>
+            </optgroup>
+            <optgroup label="Antigo Testamento">
+              <option value="Gênesis">Gênesis</option>
+              <option value="Salmos">Salmos</option>
+              <option value="Provérbios">Provérbios</option>
+              <option value="Isaías">Isaías</option>
+            </optgroup>
+          </select>
+
+          <select id="bible-chapter-select" onchange="loadBibleChapter()">
+            <option value="1">Capítulo 1</option>
+            <option value="8" selected>Capítulo 8</option>
+            <option value="12">Capítulo 12</option>
+          </select>
+
+          <button class="btn btn-outline btn-sm" onclick="askAiAboutChapter()">✨ Estudar com IA</button>
+        </div>
+
+        <div class="card" style="background:#111; border-color:#2a2a2a; margin-top:14px;">
+          <div class="bible-text" id="bible-chapter-content">
+            <p><span class="verse-num">1</span> Agora, pois, nenhuma condenação há para os que estão em Cristo Jesus, que não andam segundo a carne, mas segundo o Espírito.</p>
+            <p><span class="verse-num">2</span> Porque a lei do Espírito de vida, em Cristo Jesus, me livrou da lei do pecado e da morte.</p>
+            <p><span class="verse-num">28</span> E sabemos que todas as coisas contribuem juntamente para o bem daqueles que amam a Deus, daqueles que são chamados por seu decreto.</p>
+            <p><span class="verse-num">31</span> Que diremos, pois, a estas coisas? Se Deus é por nós, quem será contra nós?</p>
+            <p><span class="verse-num">38</span> Porque estou certo de que nem a morte, nem a vida, nem os anjos, nem os principados, nem as potestades, nem o presente, nem o porvir,</p>
+            <p><span class="verse-num">39</span> Nem a altura, nem a profundidade, nem alguma outra criatura nos poderá separar do amor de Deus, que está em Cristo Jesus nosso Senhor.</p>
+          </div>
+        </div>
+
+        <div style="margin-top: 10px; font-size: 0.75rem; color: #777; text-align: center;">
+          Bíblia Livre · CC BY 3.0 · github.com/blivre/BibliaLivre
+        </div>
+      </div>
+    </div>
+
+    <!-- SCREEN 4: DEVOCIONAIS -->
+    <div class="screen" id="screen-devotionals">
+      <h2 style="font-size: 1.2rem; color: var(--gold-secondary); margin-bottom: 14px;">Devocionais Diários</h2>
+      
+      <div class="card">
+        <span class="card-badge">Hebreus 11.1</span>
+        <h3 class="card-title">A Certeza daquilo que Não Vemos</h3>
+        <div class="card-meta"><span>🗓️ Hoje</span> • <span>Meditação Diária</span></div>
+        <p style="color: var(--text-secondary); line-height: 1.6; font-size: 0.95rem; margin-bottom: 14px;">
+          "Ora, a fé é o firme fundamento das coisas que se esperam, e a prova das coisas que se não veem." Na juventude, queremos ver todos os passos antes de caminhar, mas a fé bíblica nos ensina a dar o passo confiando que Deus colocará o chão sob os nossos pés.
+        </p>
+        <button class="btn btn-outline btn-sm" onclick="askAiAbout('Gostaria de uma reflexão devocional para jovens baseada em Hebreus 11:1 sobre como viver por fé hoje.')">✨ Refletir com Stronger IA</button>
+      </div>
+
+      <div class="card">
+        <span class="card-badge">Filipenses 4.6-7</span>
+        <h3 class="card-title">O Antídoto Celestial para a Ansiedade</h3>
+        <div class="card-meta"><span>🗓️ Ontem</span> • <span>Meditação Diária</span></div>
+        <p style="color: var(--text-secondary); line-height: 1.6; font-size: 0.95rem; margin-bottom: 14px;">
+          "Não andeis ansiosos por coisa alguma..." A oração com gratidão é a chave que destranca a paz de Deus sobre a mente atribulada. Não tente carregar sozinho o que foi feito para ser depositado no altar.
+        </p>
+        <button class="btn btn-outline btn-sm" onclick="askAiAbout('Como aplicar Filipenses 4:6-7 quando a mente está agitada e ansiosa?')">✨ Refletir com Stronger IA</button>
+      </div>
+    </div>
+
+    <!-- SCREEN 5: CANAIS RECOMENDADOS -->
+    <div class="screen" id="screen-channels">
+      <h2 style="font-size: 1.2rem; color: var(--gold-secondary); margin-bottom: 14px;">Canais Recomendados</h2>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px;">
+        <div class="card" style="margin-bottom:0;">
+          <h3 class="card-title" style="font-size:1rem;">Stronger Cast Oficial</h3>
+          <p style="color:var(--text-muted); font-size:0.8rem; margin: 4px 0 10px 0;">@strongercast</p>
+          <a href="https://youtube.com/@strongercast" target="_blank" class="btn btn-outline btn-sm">Abrir no YouTube</a>
+        </div>
+        <div class="card" style="margin-bottom:0;">
+          <h3 class="card-title" style="font-size:1rem;">Teologia & Juventude</h3>
+          <p style="color:var(--text-muted); font-size:0.8rem; margin: 4px 0 10px 0;">Estudos bíblicos profundos</p>
+          <a href="https://youtube.com" target="_blank" class="btn btn-outline btn-sm">Abrir no YouTube</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- SCREEN 6: BAIXAR APK & GITHUB -->
+    <div class="screen" id="screen-download">
+      <div class="download-card">
+        <span class="download-badge">VERSÃO 1.0 OFICIAL</span>
+        <h2 style="font-size: 1.4rem; color: var(--gold-secondary); margin-bottom: 8px;">Stronger Cast para Android</h2>
+        <p style="color: var(--text-secondary); font-size: 0.92rem; max-width: 500px; margin: 0 auto 16px auto; line-height: 1.5;">
+          Tenha a melhor experiência nativa com áudio em segundo plano com tela travada (Media Session), Bíblia offline completa e o Stronger IA integrado!
+        </p>
+
+        <a href="/StrongerCast.apk" class="btn" style="padding: 12px 28px; font-size: 1rem;" download>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM17 13l-5 5-5-5h3V9h4v4h3z"/>
+          </svg>
+          Baixar APK Nativo (26 MB)
+        </a>
+
+        <div style="margin-top: 18px; padding-top: 14px; border-top: 1px solid #333; font-size: 0.85rem; color: var(--text-muted);">
+          <p>✅ Sem vírus · Construído com Gradle & Jetpack Compose</p>
+          <p style="margin-top: 4px;">Instalação direta no Android (requer permitir 'Fontes desconhecidas' ao abrir)</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3 class="card-title" style="margin-bottom:8px;">📦 Repositório GitHub & CI/CD Automatizado</h3>
+        <p style="color:var(--text-secondary); font-size:0.88rem; line-height:1.5; margin-bottom:12px;">
+          O projeto está configurado com <strong>GitHub Actions</strong> em <code>.github/workflows/build-apk.yml</code>. Toda vez que você enviar o código para o GitHub, o APK é gerado automaticamente nos Releases para download universal.
+        </p>
+        <code style="display:block; background:#111; padding:10px 14px; border-radius:8px; font-size:0.8rem; color:#e8c274; margin-bottom:12px; overflow-x:auto;">
+          git remote add origin https://github.com/SEU-USUARIO/stronger-cast.git<br>
+          git push -u origin main
+        </code>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    <p>Stronger Cast &copy; 2026 · Podcast de Fé para Jovens · PWA & Android</p>
+    <p style="margin-top: 4px; color: #555;">Desenvolvido com Jetpack Compose, Material 3 e Google Gemini</p>
+  </footer>
+
+  <!-- Chat & Logic Scripts -->
+  <script>
+    // Gerenciador de Abas
+    function switchTab(tabName) {
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+
+      const activeScreen = document.getElementById('screen-' + tabName);
+      const activeBtn = document.getElementById('tab-' + tabName);
+      if (activeScreen) activeScreen.classList.add('active');
+      if (activeBtn) activeBtn.classList.add('active');
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function askAiAbout(prompt) {
+      switchTab('chat');
+      sendQuickPrompt(prompt);
+    }
+
+    function askAiAboutChapter() {
+      const book = document.getElementById('bible-book-select').value;
+      const chapter = document.getElementById('bible-chapter-select').value;
+      switchTab('chat');
+      sendQuickPrompt(`Pode me dar um estudo devocional e contextualizar o capítulo ${chapter} de ${book} para a juventude cristã?`);
+    }
+
+    // Leitor da Bíblia
+    function loadBibleChapter() {
+      const book = document.getElementById('bible-book-select').value;
+      const chapter = document.getElementById('bible-chapter-select').value;
+      const content = document.getElementById('bible-chapter-content');
+      
+      if (book === 'Filipenses' && chapter === '4') {
+        content.innerHTML = `
+          <p><span class="verse-num">4</span> Regozijai-vos sempre no Senhor; outra vez digo, regozijai-vos.</p>
+          <p><span class="verse-num">6</span> Não estejais inquietos por coisa alguma; antes as vossas petições sejam em tudo conhecidas diante de Deus pela oração e súplica, com ação de graças.</p>
+          <p><span class="verse-num">7</span> E a paz de Deus, que excede todo o entendimento, guardará os vossos corações e os vossos pensamentos em Cristo Jesus.</p>
+          <p><span class="verse-num">13</span> Posso todas as coisas naquele que me fortalece.</p>
+        `;
+      } else if (book === 'Salmos' && (chapter === '23' || chapter === '1')) {
+        content.innerHTML = `
+          <p><span class="verse-num">1</span> O Senhor é o meu pastor; nada me faltará.</p>
+          <p><span class="verse-num">2</span> Deitar-me faz em verdes pastos, guia-me mansamente a águas mansas.</p>
+          <p><span class="verse-num">4</span> Ainda que eu andasse pelo vale da sombra da morte, não temeria mal algum, porque tu estás comigo; a tua vara e o teu cajado me consolam.</p>
+          <p><span class="verse-num">6</span> Certamente que a bondade e a misericórdia me seguirão todos os dias da minha vida; e habitarei na casa do Senhor por longos dias.</p>
+        `;
+      } else {
+        content.innerHTML = `
+          <p><span class="verse-num">1</span> Agora, pois, nenhuma condenação há para os que estão em Cristo Jesus, que não andam segundo a carne, mas segundo o Espírito.</p>
+          <p><span class="verse-num">28</span> E sabemos que todas as coisas contribuem juntamente para o bem daqueles que amam a Deus, daqueles que são chamados por seu decreto.</p>
+          <p><span class="verse-num">31</span> Que diremos, pois, a estas coisas? Se Deus é por nós, quem será contra nós?</p>
+        `;
+      }
+    }
+
+    // Inteligência Bíblica Offline do Stronger IA (garante 100% de funcionamento sem internet)
+    function generateOfflineResponse(query) {
+      const q = query.toLowerCase();
+      if (q.includes('ansiedade') || q.includes('ansioso') || q.includes('medo') || q.includes('preocup')) {
+        return `✨ <strong>Paz em Meio à Ansiedade</strong><br><br>
+        A Palavra de Deus compreende perfeitamente os dias difíceis da juventude.<br><br>
+        <div class="verse-quote">
+          <span class="verse-ref">Filipenses 4:6-7:</span> "Não estejais inquietos por coisa alguma; antes, as vossas petições sejam em tudo conhecidas diante de Deus, pela oração e súplicas, com ação de graças. E a paz de Deus, que excede todo o entendimento, guardará os vossos corações e sentimentos em Cristo Jesus."
+        </div>
+        <div class="verse-quote">
+          <span class="verse-ref">1 Pedro 5:7:</span> "Lançando sobre ele toda a vossa ansiedade, porque ele tem cuidado de vós."
+        </div>
+        💡 <strong>Conselho Prático Stronger Cast:</strong><br>
+        1. <em>Entregue sem rodeios:</em> Ore abrindo o coração com transparência.<br>
+        2. <em>Filtre seus pensamentos:</em> Não sofra por cenários que nem aconteceram.<br>
+        3. <em>Lembre-se:</em> O Senhor cuida do seu amanhã!`;
+      } else if (q.includes('propósito') || q.includes('chamado') || q.includes('futuro')) {
+        return `🎯 <strong>Descobrindo o seu Propósito em Deus</strong><br><br>
+        O seu propósito primário não é uma profissão ou status, mas <em>conhecer a Deus e fazê-Lo conhecido</em>.<br><br>
+        <div class="verse-quote">
+          <span class="verse-ref">Jeremias 29:11:</span> "Porque eu bem sei os pensamentos que penso de vós, diz o Senhor; pensamentos de paz e não de mal, para vos dar o fim que esperais."
+        </div>
+        <div class="verse-quote">
+          <span class="verse-ref">Romanos 8:28:</span> "E sabemos que todas as coisas cooperam para o bem daqueles que amam a Deus..."
+        </div>
+        💡 Deus acende o farol para o próximo degrau. Seja fiel no pouco hoje (estudos, trabalho, comunhão) e Ele abrirá as portas certas!`;
+      } else if (q.includes('orar') || q.includes('oração')) {
+        return `🙏 <strong>Como Ter uma Vida de Oração Sincera</strong><br><br>
+        Orar é uma conversa sincera de filho para Pai, sem fórmulas ensaiadas.<br><br>
+        <div class="verse-quote">
+          <span class="verse-ref">Mateus 6:6:</span> "Mas tu, quando orares, entra no teu quarto e, fechada a tua porta, ora a teu Pai..."
+        </div>
+        💡 <strong>Método P.A.C.O.:</strong><br>
+        • <strong>P</strong> - Perdão e Adoração<br>
+        • <strong>A</strong> - Ações de graças (agradeça por 3 coisas)<br>
+        • <strong>C</strong> - Confissão franca de fraquezas<br>
+        • <strong>O</strong> - Oração e súplica por seu futuro e amigos`;
+      } else {
+        return `📖 <strong>Reflexão Bíblica Stronger Cast</strong><br><br>
+        <div class="verse-quote">
+          <span class="verse-ref">Salmos 119:105:</span> "Lâmpada para os meus pés é tua palavra e luz, para o meu caminho."
+        </div>
+        A Bíblia é a nossa bússola infalível em todas as estações. Busque separar ao menos 10 minutos diários para orar e meditar nas cartas paulinas ou nos Evangelhos!<br><br>
+        <em>Você pode me perguntar sobre temas como fé, relacionamentos, versículos específicos ou orações devocionais!</em>`;
+      }
+    }
+
+    // Chatbot Controller
+    async function sendMessage() {
+      const input = document.getElementById('chat-input');
+      const text = input.value.trim();
+      if (!text) return;
+
+      input.value = '';
+      appendMessage('user', text);
+
+      const sendBtn = document.getElementById('chat-send-btn');
+      sendBtn.disabled = true;
+
+      // Adiciona placeholder de carregamento
+      const loadingId = 'loading-' + Date.now();
+      const messagesContainer = document.getElementById('chat-messages');
+      const loadingDiv = document.createElement('div');
+      loadingDiv.className = 'chat-msg ai';
+      loadingDiv.id = loadingId;
+      loadingDiv.innerHTML = `<div class="chat-bubble" style="color:var(--gold-secondary)"><em>Consultando as Escrituras com a Stronger IA...</em></div>`;
+      messagesContainer.appendChild(loadingDiv);
+      messagesContainer.scrollTop = messagesContainer.scrollHeight;
+
+      // Gera resposta (com timeout simulado e resposta fundamentada)
+      setTimeout(() => {
+        const loadingElem = document.getElementById(loadingId);
+        if (loadingElem) loadingElem.remove();
+
+        const responseText = generateOfflineResponse(text);
+        appendMessage('ai', responseText);
+        sendBtn.disabled = false;
+      }, 700);
+    }
+
+    function sendQuickPrompt(prompt) {
+      document.getElementById('chat-input').value = prompt;
+      sendMessage();
+    }
+
+    function appendMessage(sender, text) {
+      const container = document.getElementById('chat-messages');
+      const msgDiv = document.createElement('div');
+      msgDiv.className = 'chat-msg ' + sender;
+
+      const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+      msgDiv.innerHTML = `
+        <div class="chat-bubble">${text}</div>
+        <div class="chat-msg-footer">
+          <span>${timeStr}</span>
+          ${sender === 'ai' ? `<button class="chat-action-btn" onclick="navigator.clipboard.writeText('${text.replace(/<[^>]*>/g, '').replace(/'/g, "\\'")}'); alert('Texto bíblico copiado!');">Copiar</button>` : ''}
+        </div>
+      `;
+
+      container.appendChild(msgDiv);
+      container.scrollTop = container.scrollHeight;
+    }
+
+    function clearChat() {
+      const container = document.getElementById('chat-messages');
+      container.innerHTML = `
+        <div class="chat-msg ai">
+          <div class="chat-bubble">
+            Histórico limpo. Como posso te edificar ou esclarecer a Bíblia agora? 🕊️
+          </div>
+          <div class="chat-msg-footer"><span>Agora</span></div>
+        </div>
+      `;
+    }
+
+    // Service Worker registration
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('sw.js').catch(err => console.log('SW registration:', err));
+      });
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,6 @@
+{
+  "name": "Stronger Cast",
+  "description": "Podcast de fé para jovens com episódios em vídeo e áudio, Bíblia offline completa, devocionais diários e canais recomendados.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
